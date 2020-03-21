@@ -51,7 +51,7 @@ proc getLink*(user, repo, title, labels, assignee: string, links: seq[string]): 
     for i, url in links: body.add $i & ". " & url & "\n"
     body.add "\n\n"
   result = ("https://github.com/" & user & "/" & repo & "/issues/new?" &
-    encodeQuery({"title": "[nimbug] " & title, "labels": labels, "assignee": assignee, "body": body}))
+    encodeQuery({"title": title, "labels": labels, "assignee": assignee, "body": body}))
 
 proc reportBug*(user, repo, title, labels, assignee: string, links: seq[string]) =
   let linky = getLink(user, repo, title, labels, assignee, links)
