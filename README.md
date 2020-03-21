@@ -5,7 +5,7 @@
 
 # Install
 
-- `nimble install nimbug`
+- `nimble install nimbug` (No dependencies)
 
 
 # Use
@@ -24,3 +24,14 @@ Links with useful information? (Can be empty):
 ```
 
 - **Result:** https://github.com/juancarlospaco/nimbug/issues/1
+
+
+# Compile-Time options
+
+Define `defaultUser` and `defaultRepo` then you have a custom Bug Report Tool for YOUR project.
+
+**Example:**
+
+- `nim c -d:defaultUser=nim-lang -d:defaultRepo=Nim nimbug.nim`
+
+Now it reports Bugs directly to https://github.com/nim-lang/Nim/issues
