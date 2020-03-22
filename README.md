@@ -35,3 +35,16 @@ Define `defaultUser` and `defaultRepo` then you have a custom Bug Report Tool fo
 - `nim c -d:defaultUser=nim-lang -d:defaultRepo=Nim nimbug.nim`
 
 Now it reports Bugs directly to https://github.com/nim-lang/Nim/issues
+
+
+# FAQ
+
+- Why?.
+
+I remember Ubuntu years ago come with a tiny script named `ubuntu-bug`.
+
+- Why not use `--title="foo"`?.
+
+The tool is interactive on purpose.
+
+Using all options via arguments will encourage unattended scripts to report bugs.
