@@ -74,10 +74,10 @@ proc main() =
     title = readLineFromStdin("Issue report short Title? (Must not be empty): ").strip
   labels = readLineFromStdin("Issue report proposed Labels? (Comma separated, can be empty): ").strip
   assignee = readLineFromStdin("Issue report proposed Assignee? (GitHub Username, can be empty): ").normalize.strip
-  var links: seq[string]
-  for _ in 0..9:
+  var links: newSeqOfCap[string](9)
+  for _ in 1..9:
     link = readLineFromStdin("Links with useful information? (9 Links max, can be empty): ").toLowerAscii.strip
-    if link == "": break else: links.add link
+    if link.len == 0: break else: links.add link
   reportBug(user, repo, title, labels, assignee, links)
 
 
