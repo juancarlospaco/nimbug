@@ -69,14 +69,14 @@ proc main() =
     while user.len == 0:
       user = readLineFromStdin("GitHub Username or Team of the project?: ").strip
     while repo.len == 0:
-      repo = readLineFromStdin("GitHub Repo of the project?: ").strip
+      repo = readLineFromStdin("GitHub Repository of the project?: ").strip
   while title.len == 0:
-    title = readLineFromStdin("Issue report short Title? (Must not be empty): ").strip
+    title = readLineFromStdin("Issue report short and descriptive Title? (Must not be empty): ").strip
   labels = readLineFromStdin("Issue report proposed Labels? (Comma separated, can be empty): ").strip
-  assignee = readLineFromStdin("Issue report proposed Assignee? (GitHub Username, can be empty): ").normalize.strip
-  var links: newSeqOfCap[string](9)
+  assignee = readLineFromStdin("Issue report 1 proposed Assignee? (GitHub User, can be empty): ").normalize.strip
+  var links = newSeqOfCap[string](9)
   for _ in 1..9:
-    link = readLineFromStdin("Links with useful information? (9 Links max, can be empty): ").toLowerAscii.strip
+    link = readLineFromStdin("Links with useful info/pastebin?  (9 Links max, can be empty): ").toLowerAscii.strip
     if link.len == 0: break else: links.add link
   reportBug(user, repo, title, labels, assignee, links)
 
