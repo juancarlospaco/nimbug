@@ -40,8 +40,9 @@ proc getSystemInfo*(title, labels: string): JsonNode =
   }
 
 proc getLink*(user, repo, title, labels, assignee: string, links: seq[string]): string =
-  var body = ("\n\n# System Information\n\n<details>\n\n```json\n\n" &
-    getSystemInfo(title, labels).pretty & "\n```\n\n</details>\n\n")
+  let info = getSystemInfo(title, labels).pretty
+  echo info
+  var body = ("\n\n# System Information\n\n<details>\n\n```json\n\n" & info & "\n```\n\n</details>\n\n")
   if labels.len > 0:
     body.add "# Proposed Labels\n\n```csv\n" & labels & "\n```\n\n"
   if assignee.len > 0:
