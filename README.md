@@ -39,8 +39,7 @@ Now it reports Bugs directly to https://github.com/nim-lang/Nim/issues
 
 # Privacy
 
-NimBug does not include any path of your personal folders, and you can see the results on the browser anyway,
-so use it and dont worry, no one will know about your `~/Hentai-Downloader/` ;P
+NimBug does not include any path of your personal folders, and you can see the results on the browser anyway.
 
 
 # FAQ
