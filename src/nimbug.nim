@@ -1,9 +1,14 @@
 import os, osproc, times, browsers, json, strutils, encodings, uri, rdstdin, std/compilesettings
 
-proc getSystemInfo*(): JsonNode =
+template isSsd(): bool =
+  when defined(linux): # Returns `true` if main disk is SSD (Solid). Linux only
+    try: readFile("/sys/block/sda/queue/rotational") == "0\n" except: false
+
+proc getSystemInfo*(title, labels: string): JsonNode =
   result = %*{
-    "CompileDate": CompileDate,
-    "CompileTime": CompileTime,
+    "title": title,
+    "labels": labels,
+    "compiled": CompileDate & "T" & CompileTime,
     "NimVersion": NimVersion,
     "hostCPU": hostCPU,
     "hostOS": hostOS,
@@ -17,28 +22,26 @@ proc getSystemInfo*(): JsonNode =
     "getTotalMem": getTotalMem(),
     "getOccupiedMem": getOccupiedMem(),
     "countProcessors": countProcessors(),
+    "ssd": isSsd(),
     "FileSystemCaseSensitive": FileSystemCaseSensitive,
-    "arguments": querySetting(SingleValueSetting.arguments),
     "nimcacheDir": querySetting(SingleValueSetting.nimcacheDir),
-    "linkOptions": querySetting(SingleValueSetting.linkOptions),
-    "compileOptions": querySetting(SingleValueSetting.compileOptions),
     "ccompilerPath": querySetting(SingleValueSetting.ccompilerPath),
-    "cincludes": querySettingSeq(MultipleValueSetting.cincludes),
-    "clibs": querySettingSeq(MultipleValueSetting.clibs),
     "nimpretty": execCmdEx("nimpretty --version").output.strip,
-    "nimble": execCmdEx("nimble --version").output.strip,
-    "nimgrep": execCmdEx("nimgrep --version").output.strip,
+    "nimble": execCmdEx("nimble --noColor --version").output.strip,
+    "nimgrep": execCmdEx("nimgrep --nocolor --version").output.strip,
     "nimsuggest": execCmdEx("nimsuggest --version").output.strip,
-    "choosenim": if findExe"choosenim".len > 0: execCmdEx("choosenim --version").output.strip else: "",
+    "choosenim": if findExe"choosenim".len > 0: execCmdEx("choosenim --noColor --version").output.strip else: "",
     "gcc": if findExe"gcc".len > 0: execCmdEx("gcc --version").output.strip else: "",
     "clang": if findExe"clang".len > 0: execCmdEx("clang --version").output.strip else: "",
     "git": if findExe"git".len > 0: execCmdEx("git --version").output.strip else: "",
     "node": if findExe"node".len > 0: execCmdEx("node --version").output.strip else: "",
+    "uname": execCmdEx(when defined(windows): "systeminfo" else: "uname -a").output.strip,
     "python": if findExe"python".len > 0: execCmdEx("python --version").output.strip else: ""
   }
 
 proc getLink*(user, repo, title, labels, assignee: string, links: seq[string]): string =
-  var body = "\n\n# System Information\n\n<details>\n\n```json\n\n" & getSystemInfo().pretty & "\n```\n\n</details>\n\n"
+  var body = ("\n\n# System Information\n\n<details>\n\n<!--NIMBUG_START-->\n\n```json\n\n" &
+    getSystemInfo(title, labels).pretty & "\n```\n\n<!--NIMBUG_END-->\n\n</details>\n\n")
   if labels.len > 0:
     body.add "# Proposed Labels\n\n```csv\n" & labels & "\n```\n\n"
   if assignee.len > 0:
@@ -72,8 +75,8 @@ proc main() =
   labels = readLineFromStdin("Issue report proposed Labels? (Comma separated, can be empty): ").strip
   assignee = readLineFromStdin("Issue report proposed Assignee? (GitHub Username, can be empty): ").normalize.strip
   var links: seq[string]
-  while on:
-    link = readLineFromStdin("Links with useful information? (Can be empty): ").toLowerAscii.strip
+  for _ in 0..9:
+    link = readLineFromStdin("Links with useful information? (9 Links max, can be empty): ").toLowerAscii.strip
     if link == "": break else: links.add link
   reportBug(user, repo, title, labels, assignee, links)
 

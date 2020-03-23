@@ -37,6 +37,11 @@ Define `defaultUser` and `defaultRepo` then you have a custom Bug Report Tool fo
 Now it reports Bugs directly to https://github.com/nim-lang/Nim/issues
 
 
+# Web Scraping
+
+- For easy web scraping, search for `<!--NIMBUG_START-->` and `<!--NIMBUG_END-->`, valid JSON should be inside.
+
+
 # FAQ
 
 - Why?.
