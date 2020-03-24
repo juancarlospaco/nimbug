@@ -25,7 +25,8 @@ Links with useful info/pastebin?  (9 Links max, can be empty):
 
 ```
 
-- **Result:** https://github.com/juancarlospaco/nimbug/issues/1
+- **Generates this bug (Fake):** https://github.com/juancarlospaco/nimbug/issues/1
+- **Real life use case (Real):** https://github.com/nim-lang/Nim/issues/13722#issue-585682299
 
 
 # Compile-Time options
