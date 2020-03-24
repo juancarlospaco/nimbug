@@ -1,4 +1,4 @@
-import os, osproc, times, browsers, json, strutils, encodings, uri, rdstdin, posix_utils, std/compilesettings
+import os, osproc, times, browsers, json, strutils, encodings, uri, rdstdin, posix, posix_utils, std/compilesettings
 
 template isSsd(): bool =
   when defined(linux): # Returns `true` if main disk is SSD (Solid). Linux only
@@ -35,6 +35,50 @@ proc getSystemInfo*(): JsonNode =
     "ssd": isSsd()
   }
 
+proc getUserRepo(): array[2, string] =
+  const
+    defaultUser {.strdefine.} = "nim-lang"
+    defaultRepo {.strdefine.} = "Nim"
+    opt3 = gorgeEx"git config --get github.user".output.strip
+    opt0 = gorgeEx"git config --get user.name".output.strip
+  let
+    cmd = execCmdEx"git config --get remote.origin.url"
+    opt1 = $getpwuid(getuid()).pw_name
+    opt2 = getCurrentDir().extractFilename
+    opt6 = getEnv("VIRTUAL_ENV").extractFilename.strip
+    opt4 = if cmd.exitCode == 0: cmd.output.strip[19..^5].split("/")[0] else: ""
+    opt5 = if cmd.exitCode == 0: cmd.output.strip[19..^5].split("/")[1] else: ""
+  echo("Select GitHub User or Team of the project?:\n", "0\t", opt0, "\n1\t",
+    opt1, "\n2\t", opt2, "\n3\t", opt3, "\n4\t", opt4, "\n5\t", opt5,
+    "\n6\t", opt6, "\n7\t", defaultRepo, "\n8\t", defaultUser, "\n9\tType (Manual)\n")
+  let githubUser = case readLineFromStdin(" 0, 1, 2, 3, 4, 5, 6, 7, 8, 9?: ").parseInt
+    of 0: opt0
+    of 1: opt1
+    of 2: opt2
+    of 3: opt3
+    of 4: opt4
+    of 5: opt5
+    of 6: opt6
+    of 7: defaultRepo
+    of 8: defaultUser
+    else: readLineFromStdin("GitHub Username or Team of the project?: ").strip
+  echo("GitHub Repository of the project?:\n", "0\t", opt0, "\n1\t", opt1,
+    "\n2\t", opt2, "\n3\t", opt3, "\n4\t", opt4, "\n5\t", opt5,
+    "\n6\t", opt6, "\n7\t", defaultUser, "\n8\t", defaultRepo, "\n9\tType (Manual)\n")
+  let githubRepo = case readLineFromStdin(" 0, 1, 2, 3, 4, 5, 6, 7, 8, 9?: ").parseInt
+    of 0: opt0
+    of 1: opt1
+    of 2: opt2
+    of 3: opt3
+    of 4: opt4
+    of 5: opt5
+    of 6: opt6
+    of 7: defaultUser
+    of 8: defaultRepo
+    else: readLineFromStdin("GitHub Repository of the project?: ").strip
+  when not defined(release): echo [githubUser, githubRepo]
+  result = [githubUser, githubRepo]
+
 proc getLink*(user, repo, title, labels, assignee: string, links: seq[string]): string =
   let info = getSystemInfo().pretty
   echo "\n", info, "\n"
@@ -56,26 +100,18 @@ proc reportBug*(user, repo, title, labels, assignee: string, links: seq[string])
   openDefaultBrowser linky
 
 proc main() =
-  const defaultUser {.strdefine.} = ""
-  const defaultRepo {.strdefine.} = ""
-  var title, labels, assignee, user, repo, link: string
-  when defaultUser.len > 0 and defaultRepo.len > 0:
-    user = defaultUser
-    repo = defaultRepo
-  else:
-    while user.len == 0:
-      user = readLineFromStdin("GitHub Username or Team of the project?: ").strip
-    while repo.len == 0:
-      repo = readLineFromStdin("GitHub Repository of the project?: ").strip
+  let user_repo = getUserRepo()
+  var title, link: string
   while title.len == 0:
     title = readLineFromStdin("Issue report short and descriptive Title? (Must not be empty): ").strip
-  labels = readLineFromStdin("Issue report proposed Labels? (Comma separated, can be empty): ").strip
-  assignee = readLineFromStdin("Issue report 1 proposed Assignee? (GitHub User, can be empty): ").normalize.strip
+  let
+    labels = readLineFromStdin("Issue report proposed Labels? (Comma separated, can be empty): ").strip
+    assignee = readLineFromStdin("Issue report 1 proposed Assignee? (GitHub User, can be empty): ").normalize.strip
   var links = newSeqOfCap[string](9)
   for _ in 1..9:
     link = readLineFromStdin("Links with useful info/pastebin?  (9 Links max, can be empty): ").toLowerAscii.strip
     if link.len == 0: break else: links.add link
-  reportBug(user, repo, title, labels, assignee, links)
+  reportBug(user_repo[0], user_repo[1], title, labels, assignee, links)
 
 
 when isMainModule:
