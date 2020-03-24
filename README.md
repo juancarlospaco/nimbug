@@ -53,3 +53,23 @@ I remember Ubuntu years ago come with a tiny script named `ubuntu-bug`.
 The tool is interactive on purpose.
 
 Using all options via arguments will encourage unattended scripts to report bugs.
+
+- Why not use GitHub API?.
+
+Using it from the API offers no benefit over the URL params,
+but it requires a GitHub Token secret, this is what the API takes:
+
+```json
+{
+  "title": "Found a bug",
+  "body": "Can not divide by zero",
+  "assignees": [
+    "octocat"
+  ],
+  "labels": [
+    "bug"
+  ]
+}
+```
+
+Literally the same you can pass via URL.
