@@ -73,3 +73,5 @@ but it requires a GitHub Token secret, this is what the API takes:
 ```
 
 Literally the same you can pass via URL.
+
+But if you want it via API for some reason, I will accept the Pull Request.
