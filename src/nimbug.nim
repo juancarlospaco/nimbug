@@ -1,13 +1,11 @@
-import os, osproc, times, browsers, json, strutils, encodings, uri, rdstdin, std/compilesettings
+import os, osproc, times, browsers, json, strutils, encodings, uri, rdstdin, posix_utils, std/compilesettings
 
 template isSsd(): bool =
   when defined(linux): # Returns `true` if main disk is SSD (Solid). Linux only
     try: readFile("/sys/block/sda/queue/rotational") == "0\n" except: false
 
-proc getSystemInfo*(title, labels: string): JsonNode =
+proc getSystemInfo*(): JsonNode =
   result = %*{
-    "title": title,
-    "labels": labels,
     "compiled": CompileDate & "T" & CompileTime,
     "NimVersion": NimVersion,
     "hostCPU": hostCPU,
@@ -22,7 +20,7 @@ proc getSystemInfo*(title, labels: string): JsonNode =
     "getTotalMem": getTotalMem(),
     "getOccupiedMem": getOccupiedMem(),
     "countProcessors": countProcessors(),
-    "ssd": isSsd(),
+    "uname": uname(),
     "FileSystemCaseSensitive": FileSystemCaseSensitive,
     "nimcacheDir": querySetting(SingleValueSetting.nimcacheDir),
     "ccompilerPath": querySetting(SingleValueSetting.ccompilerPath),
@@ -35,13 +33,13 @@ proc getSystemInfo*(title, labels: string): JsonNode =
     "clang": if findExe"clang".len > 0: execCmdEx("clang --version").output.strip else: "",
     "git": if findExe"git".len > 0: execCmdEx("git --version").output.strip else: "",
     "node": if findExe"node".len > 0: execCmdEx("node --version").output.strip else: "",
-    "uname": execCmdEx(when defined(windows): "systeminfo" else: "uname -a").output.strip,
-    "python": if findExe"python".len > 0: execCmdEx("python --version").output.strip else: ""
+    "python": if findExe"python".len > 0: execCmdEx("python --version").output.strip else: "",
+    "ssd": isSsd()
   }
 
 proc getLink*(user, repo, title, labels, assignee: string, links: seq[string]): string =
-  let info = getSystemInfo(title, labels).pretty
-  echo info
+  let info = getSystemInfo().pretty
+  echo "\n", info, "\n"
   var body = ("\n\n# System Information\n\n<details>\n\n```json\n\n" & info & "\n```\n\n</details>\n\n")
   if labels.len > 0:
     body.add "# Proposed Labels\n\n```csv\n" & labels & "\n```\n\n"
