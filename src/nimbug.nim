@@ -27,11 +27,11 @@ proc getSystemInfo*(): JsonNode =
     "nimgrep": execCmdEx("nimgrep --nocolor --version").output.strip,
     "nimsuggest": execCmdEx("nimsuggest --version").output.strip,
     "choosenim": if findExe"choosenim".len > 0: execCmdEx("choosenim --noColor --version").output.strip else: "",
-    "gcc": if findExe"gcc".len > 0: execCmdEx("gcc --version").output.strip else: "",
-    "clang": if findExe"clang".len > 0: execCmdEx("clang --version").output.strip else: "",
-    "git": if findExe"git".len > 0: execCmdEx("git --version").output.strip else: "",
+    "gcc": if findExe"gcc".len > 0: execCmdEx("gcc --version").output.splitLines()[0].strip else: "",
+    "clang": if findExe"clang".len > 0: execCmdEx("clang --version").output.splitLines()[0].strip else: "",
+    "git": if findExe"git".len > 0: execCmdEx("git --version").output.replace("git version", "").strip else: "",
     "node": if findExe"node".len > 0: execCmdEx("node --version").output.strip else: "",
-    "python": if findExe"python".len > 0: execCmdEx("python --version").output.strip else: "",
+    "python": if findExe"python".len > 0: execCmdEx("python --version").output.replace("Python", "").strip else: "",
     "ssd": isSsd()
   }
 
