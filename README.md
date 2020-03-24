@@ -2,6 +2,8 @@
 
 - [Nim](https://nim-lang.org) Semi-Auto Bug Report Tool.
 
+![](nimbug.png)
+
 
 # Install
 
