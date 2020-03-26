@@ -46,6 +46,11 @@ Now it reports Bugs directly to https://github.com/nim-lang/Nim/issues
 - NimBug does not include any path of your personal folders, and you can see the results on the browser anyway.
 
 
+# See also
+
+- [Conflict-less `changelog.md` generator with configurable categories for Nim, for tiny or massive Git projects.](https://github.com/juancarlospaco/changelogen#changelogen)
+
+
 # FAQ
 
 - Why?.
