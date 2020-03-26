@@ -27,6 +27,7 @@ Links with useful info/pastebin?  (9 Links max, can be empty):
 
 - **Generates this bug (Fake):** https://github.com/juancarlospaco/nimbug/issues/1
 - **Real life use case (Real):** https://github.com/nim-lang/Nim/issues/13722#issue-585682299
+- Auto-Detects Git User and Repo of the project you are reporting bugs to.
 
 
 # Compile-Time options
@@ -42,7 +43,7 @@ Now it reports Bugs directly to https://github.com/nim-lang/Nim/issues
 
 # Privacy
 
-NimBug does not include any path of your personal folders, and you can see the results on the browser anyway.
+- NimBug does not include any path of your personal folders, and you can see the results on the browser anyway.
 
 
 # FAQ
@@ -60,7 +61,10 @@ Using all options via arguments will encourage unattended scripts to report bugs
 - Why not use GitHub API?.
 
 Using it from the API offers no benefit over the URL params,
-but it requires a GitHub Token secret, this is what the API takes:
+but it requires a valid GitHub Token secret and code to store secrets,
+requires OpenSSL with `-d:ssl`, configuration for secrets probably,
+documentation about how to setup the secrets on the app before use,
+this is what the API takes:
 
 ```json
 {
