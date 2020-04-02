@@ -1,5 +1,29 @@
 import os, osproc, times, browsers, json, strutils, encodings, uri, rdstdin, posix, posix_utils, std/compilesettings
 
+const baseBugTemplate = """# Examples
+
+```nim
+
+```
+
+# Current Output
+
+```nim
+
+```
+
+# Expected Output
+
+```nim
+
+```
+
+# Possible Solution
+
+# Additional Information
+
+"""
+
 template isSsd(): bool =
   when defined(linux): # Returns `true` if main disk is SSD (Solid). Linux only
     try: readFile("/sys/block/sda/queue/rotational") == "0\n" except: false
@@ -22,6 +46,7 @@ proc getSystemInfo*(): JsonNode =
     "FileSystemCaseSensitive": FileSystemCaseSensitive,
     "nimcacheDir": querySetting(SingleValueSetting.nimcacheDir),
     "ccompilerPath": querySetting(SingleValueSetting.ccompilerPath),
+    "currentCompilerExe": getCurrentCompilerExe(),
     "nimpretty": execCmdEx("nimpretty --version").output.strip,
     "nimble": execCmdEx("nimble --noColor --version").output.strip,
     "nimgrep": execCmdEx("nimgrep --nocolor --version").output.strip,
@@ -79,10 +104,11 @@ proc getUserRepo(): array[2, string] =
   when not defined(release): echo [githubUser, githubRepo]
   result = [githubUser, githubRepo]
 
-proc getLink*(user, repo, title, labels, assignee: string, links: seq[string]): string =
+proc getLink*(user, repo, title, labels, assignee: string, links: seq[string], useTemplate: bool): string =
   let info = getSystemInfo().pretty
   echo "\n", info, "\n"
-  var body = ("\n\n# System Information\n\n<details>\n\n```json\n\n" & info & "\n```\n\n</details>\n\n")
+  var body = if useTemplate: baseBugTemplate else: ""
+  body.add("\n\n# System Information\n\n<details>\n\n```json\n\n" & info & "\n```\n\n</details>\n\n")
   if labels.len > 0:
     body.add "# Proposed Labels\n\n```csv\n" & labels & "\n```\n\n"
   if assignee.len > 0:
@@ -94,14 +120,15 @@ proc getLink*(user, repo, title, labels, assignee: string, links: seq[string]): 
   result = ("https://github.com/" & user & "/" & repo & "/issues/new?" &
     encodeQuery({"title": title, "labels": labels, "assignee": assignee, "body": body}))
 
-proc reportBug*(user, repo, title, labels, assignee: string, links: seq[string]) =
-  let linky = getLink(user, repo, title, labels, assignee, links)
+proc reportBug*(user, repo, title, labels, assignee: string, links: seq[string], useTemplate: bool) =
+  let linky = getLink(user, repo, title, labels, assignee, links, useTemplate)
   when not defined(release): echo linky
   openDefaultBrowser linky
 
 proc main() =
   let user_repo = getUserRepo()
   var title, link: string
+  let useTemplate = readLineFromStdin("Use an 'Issue Report Template' at the top of Bug report? (Y/n): ").normalize == "y"
   while title.len == 0:
     title = readLineFromStdin("Issue report short and descriptive Title? (Must not be empty): ").strip
   let
@@ -111,7 +138,7 @@ proc main() =
   for _ in 1..9:
     link = readLineFromStdin("Links with useful info/pastebin?  (9 Links max, can be empty): ").toLowerAscii.strip
     if link.len == 0: break else: links.add link
-  reportBug(user_repo[0], user_repo[1], title, labels, assignee, links)
+  reportBug(user_repo[0], user_repo[1], title, labels, assignee, links, useTemplate)
 
 
 when isMainModule:
