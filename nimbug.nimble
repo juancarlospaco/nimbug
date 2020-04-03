@@ -1,4 +1,4 @@
-version       = "0.1.0"
+version       = "0.1.1"
 author        = "Juan Carlos"
 description   = "Nim Semi-Auto Bug Report Tool"
 license       = "MIT"
