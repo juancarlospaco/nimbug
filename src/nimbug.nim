@@ -68,7 +68,7 @@ proc getUserRepo(): array[2, string] =
     opt0 = gorgeEx"git config --get user.name".output.strip
   let
     cmd = execCmdEx"git config --get remote.origin.url"
-    opt1 = $getpwuid(getuid()).pw_name
+    opt1 = try: $getpwuid(getuid()).pw_name except: ""
     opt2 = getCurrentDir().extractFilename
     opt6 = getEnv("VIRTUAL_ENV").extractFilename.strip
     opt4 = if cmd.exitCode == 0: cmd.output.strip[19..^5].split("/")[0] else: ""
