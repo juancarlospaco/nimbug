@@ -57,6 +57,7 @@ proc getSystemInfo*(): JsonNode =
     "git": if findExe"git".len > 0: execCmdEx("git --version").output.replace("git version", "").strip else: "",
     "node": if findExe"node".len > 0: execCmdEx("node --version").output.strip else: "",
     "python": if findExe"python".len > 0: execCmdEx("python --version").output.replace("Python", "").strip else: "",
+    "nimbug": static(staticExec"git rev-parse --short HEAD" & ""),
     "ssd": isSsd()
   }
 
@@ -108,7 +109,7 @@ proc getLink*(user, repo, title, labels, assignee: string, links: seq[string], u
   let info = getSystemInfo().pretty
   echo "\n", info, "\n"
   var body = if useTemplate: baseBugTemplate else: ""
-  body.add("\n\n# System Information\n\n<details>\n\n```json\n\n" & info & "\n```\n\n</details>\n\n")
+  body.add("\n\n# System Information\n\n<details>\n\n```json\n\n" & info & "\n```\n[_Powered by NimBug_](https://github.com/juancarlospaco/nimbug)\n</details>\n\n")
   if labels.len > 0:
     body.add "# Proposed Labels\n\n```csv\n" & labels & "\n```\n\n"
   if assignee.len > 0:
