@@ -1,8 +1,8 @@
-version       = "0.1.1"
+version       = "0.2.2"
 author        = "Juan Carlos"
 description   = "Nim Semi-Auto Bug Report Tool"
 license       = "MIT"
 srcDir        = "src"
 bin           = @["nimbug"]
 
-requires "nim >= 1.1.1"
+requires "nim >= 1.2.2"
